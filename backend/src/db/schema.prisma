@@ -1,0 +1,84 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String             @id @default(uuid())
+  googleId  String             @unique
+  name      String
+  email     String             @unique
+  avatarUrl String?
+  createdAt DateTime           @default(now())
+  senders   Sender[]
+  campaigns Campaign[]
+  slack     SlackIntegration?
+}
+
+model Sender {
+  id        String     @id @default(uuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  email     String
+  smtpHost  String
+  smtpPort  Int
+  smtpUser  String
+  smtpPass  String
+  createdAt DateTime   @default(now())
+  campaigns Campaign[]
+}
+
+model SlackIntegration {
+  id                 String   @id @default(uuid())
+  userId             String   @unique
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  teamId             String
+  incomingWebhookUrl String
+  accessToken        String
+  connectedAt        DateTime @default(now())
+}
+
+model Campaign {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  senderId        String
+  sender          Sender   @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  subject         String
+  body            String   @db.Text
+  startTime       DateTime
+  delayMs         Int
+  hourlyLimit     Int
+  totalRecipients Int
+  createdAt       DateTime @default(now())
+  emails          Email[]
+}
+
+enum EmailStatus {
+  SCHEDULED
+  PROCESSING
+  SENT
+  FAILED
+}
+
+model Email {
+  id             String      @id @default(uuid())
+  campaignId     String
+  campaign       Campaign    @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  recipientEmail String
+  subject        String
+  body           String      @db.Text
+  status         EmailStatus @default(SCHEDULED)
+  scheduledTime  DateTime
+  sentTime       DateTime?
+  error          String?
+  bullJobId      String      @unique
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@index([status, scheduledTime])
+}

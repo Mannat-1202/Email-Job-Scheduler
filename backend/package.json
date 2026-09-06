@@ -1,0 +1,42 @@
+{
+  "name": "reachinbox-scheduler-backend",
+  "version": "1.0.0",
+  "description": "Backend service for ReachInbox email job scheduler",
+  "main": "dist/server.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
+    "prisma:generate": "prisma generate --schema=./src/db/schema.prisma",
+    "prisma:migrate": "prisma migrate dev --schema=./src/db/schema.prisma",
+    "prisma:push": "prisma db push --schema=./src/db/schema.prisma",
+    "test:burst": "tsx ../scripts/burst-test.ts",
+    "test:restart": "tsx ../scripts/restart-test.ts"
+  },
+  "dependencies": {
+    "@bull-board/api": "^6.5.4",
+    "@bull-board/express": "^6.5.4",
+    "@elastic/elasticsearch": "^8.15.0",
+    "@prisma/client": "^5.22.0",
+    "axios": "^1.7.9",
+    "bullmq": "^5.41.0",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.0.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "ioredis": "^5.4.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.9.16",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^22.10.7",
+    "@types/nodemailer": "^6.4.17",
+    "prisma": "^5.22.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
